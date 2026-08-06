@@ -39,6 +39,7 @@ export default function DashboardPage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchDashboardData = useCallback(async () => {
+    if (!user) return;
     setLoading(true);
     setError(null);
     try {
@@ -59,11 +60,13 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  }, [toast]);
+  }, [toast, user]);
 
   useEffect(() => {
-    fetchDashboardData();
-  }, [fetchDashboardData]);
+    if (user) {
+      fetchDashboardData();
+    }
+  }, [fetchDashboardData, user]);
 
   const handleDeleteBook = async () => {
     if (!deleteId) return;

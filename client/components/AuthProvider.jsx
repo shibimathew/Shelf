@@ -38,6 +38,9 @@ export function AuthProvider({ children }) {
       setUser(res.user);
     } catch {
       setUser(null);
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('token');
+      }
     } finally {
       setLoading(false);
     }
@@ -51,6 +54,9 @@ export function AuthProvider({ children }) {
     try {
       await authAPI.logout();
     } catch {}
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+    }
     setUser(null);
     toast.info('You have been signed out.', 'Signed Out');
     router.push('/login');

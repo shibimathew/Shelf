@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { bookAPI } from '@/lib/api';
+import { useAuth } from '@/components/AuthProvider';
 import { useToast } from '@/components/ToastProvider';
 import BookCard from '@/components/BookCard';
 import ConfirmModal from '@/components/ConfirmModal';
@@ -20,6 +21,7 @@ import {
 const STATUS_FILTERS = ['All', 'Want to Read', 'Reading', 'Completed'];
 
 export default function BooksPage() {
+  const { user } = useAuth();
   const toast = useToast();
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,6 +35,7 @@ export default function BooksPage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchBooks = useCallback(async () => {
+    if (!user) return;
     setLoading(true);
     setError(null);
     try {
@@ -50,14 +53,15 @@ export default function BooksPage() {
     } finally {
       setLoading(false);
     }
-  }, [selectedStatus, search, toast]);
+  }, [selectedStatus, search, toast, user]);
 
   useEffect(() => {
+    if (!user) return;
     const timer = setTimeout(() => {
       fetchBooks();
     }, 300);
     return () => clearTimeout(timer);
-  }, [fetchBooks]);
+  }, [fetchBooks, user]);
 
   const handleDeleteBook = async () => {
     if (!deleteId) return;
